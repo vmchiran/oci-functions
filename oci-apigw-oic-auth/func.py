@@ -24,7 +24,7 @@ def initContext(context):
                                   'client_secret': ociVault.getSecret(context['apigw_idcs_app_client_secret_ocid'])}
             oauth_apps['oic'] = {'token_endpoint': context['idcs_token_endpoint'], 
                                   'client_id': context['apigw_to_oic_idcs_app_client_id'], 
-                                  'client_secret': ociVault.getSecret(context['apigw_to_oic_idcs_app_client_secret_ocid'])}
+                                  'client_secret': ociVault.getSecret(context['apigw_to_oic_idcs_app_client_secret_ocid']), 'scope': context['oic_scope']}
 
         except Exception as ex:
             logging.getLogger().error('initContext: Failed to get config or secrets')
@@ -52,9 +52,9 @@ def introspectToken(access_token, introspection_endpoint, client_id, client_secr
 
     return token.json()
 
-def getBackEndAuthToken(token_endpoint, client_id, client_secret):
+def getBackEndAuthToken(token_endpoint, client_id, client_secret, scope):
     # This method gets the token from the back-end system (oic in this case)
-    payload = {'grant_type': 'client_credentials'}
+    payload = {'grant_type': 'client_credentials', 'scope': scope}
     headers = {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'}
     try:
         backend_token = json.loads(requests.post(token_endpoint, 
@@ -83,10 +83,8 @@ def getAuthContext(token, client_apps):
     # If IDCS confirmed the token valid and active, we can proceed to populate the auth context
     if (token_info['active'] == True):
         auth_context['active'] = True
-        auth_context['principal'] = token_info['sub']
-        auth_context['scope'] = token_info['scope']
         # Retrieving the back-end Token
-        backend_token = getBackEndAuthToken(client_apps['oic']['token_endpoint'], client_apps['oic']['client_id'], client_apps['oic']['client_secret'])
+        backend_token = getBackEndAuthToken(client_apps['oic']['token_endpoint'], client_apps['oic']['client_id'], client_apps['oic']['client_secret'], client_apps['oic']['scope'])
         
         # The maximum TTL for this auth is the lesser of the API Client Auth (IDCS) and the Gateway Client Auth (oic)
         if (datetime.datetime.fromtimestamp(token_info['exp']) < (datetime.datetime.utcnow() + timedelta(seconds=backend_token['expires_in']))):
