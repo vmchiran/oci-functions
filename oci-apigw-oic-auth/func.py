@@ -90,6 +90,10 @@ def getAuthContext(token, client_apps):
     if (token_info['active'] == True):
         auth_context['active'] = True
         # Retrieving the back-end Token
+        logging.getLogger().info('oic token_endpoint: ' + client_apps['oic']['token_endpoint'])
+        logging.getLogger().info('oic client_id: ' + client_apps['oic']['client_id'])
+        logging.getLogger().info('oic client_secret: ' + client_apps['oic']['client_secret'])
+        logging.getLogger().info('oic scope: ' + client_apps['oic']['scope'])
         backend_token = getBackEndAuthToken(client_apps['oic']['token_endpoint'], client_apps['oic']['client_id'], client_apps['oic']['client_secret'], client_apps['oic']['scope'])
         
         # The maximum TTL for this auth is the lesser of the API Client Auth (IDCS) and the Gateway Client Auth (oic)
