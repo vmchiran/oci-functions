@@ -76,6 +76,7 @@ def getBackEndAuthToken(token_endpoint, client_id, client_secret, scope):
                                     headers=headers,
                                     auth=HTTPBasicAuth(client_id, client_secret))
 
+        logging.getLogger().info("getBackEndAuthToken: Request text " + backend_token.text)
         logging.getLogger().info("getBackEndAuthToken: Got the backend token " + str(backend_token))
 
     except Exception as ex:
