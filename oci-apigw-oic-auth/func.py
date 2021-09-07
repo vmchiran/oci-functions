@@ -68,7 +68,7 @@ def getBackEndAuthToken(token_endpoint, client_id, client_secret, scope):
                                                  data=payload, 
                                                  headers=headers, 
                                                  auth=HTTPBasicAuth(client_id, client_secret)).text)
-        logging.getLogger().error("getBackEndAuthToken: Got the backend token")
+        logging.getLogger().info("getBackEndAuthToken: Got the backend token " + str(backend_token))
 
     except Exception as ex:
         logging.getLogger().error("getBackEndAuthToken: Failed to get the backend token" + ex)
@@ -98,6 +98,8 @@ def getAuthContext(token, client_apps):
         logging.getLogger().info('getAuthContext: oic scope: ' + client_apps['oic']['scope'])
         backend_token = getBackEndAuthToken(client_apps['oic']['token_endpoint'], client_apps['oic']['client_id'], client_apps['oic']['client_secret'], client_apps['oic']['scope'])
         
+        logging.getLogger().info('getAuthContext: backend_token is ' + str(backend_token))
+
         # The maximum TTL for this auth is the lesser of the API Client Auth (IDCS) and the Gateway Client Auth (oic)
         # if (datetime.datetime.fromtimestamp(token_info['exp']) < (datetime.datetime.utcnow() + timedelta(seconds=backend_token['expires_in']))):
         #     auth_context['expiresAt'] = (datetime.datetime.fromtimestamp(token_info['exp'])).replace(tzinfo=datetime.timezone.utc).astimezone().replace(microsecond=0).isoformat()
