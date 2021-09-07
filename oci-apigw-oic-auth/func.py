@@ -26,11 +26,11 @@ def initContext(context):
                                   'client_id': context['apigw_idcs_app_client_id'], 
                                   'client_secret': context['apigw_idcs_app_client_secret']}
             # oauth_apps['oic'] = {'token_endpoint': context['idcs_token_endpoint'], 
-            #                       'client_id': context['apigw_to_oic_idcs_app_client_id'], 
-            #                       'client_secret': ociVault.getSecret(context['apigw_to_oic_idcs_app_client_secret_ocid']), 'scope': context['oic_scope']}
+            #                       'client_id': context['oic_idcs_app_client_id'], 
+            #                       'client_secret': ociVault.getSecret(context['oic_idcs_app_client_secret_ocid']), 'scope': context['oic_scope']}
             oauth_apps['oic'] = {'token_endpoint': context['idcs_token_endpoint'], 
-                                  'client_id': context['apigw_to_oic_idcs_app_client_id'], 
-                                  'client_secret': context['apigw_to_oic_idcs_app_client_secret'], 'scope': context['oic_scope']}
+                                  'client_id': context['oic_idcs_app_client_id'], 
+                                  'client_secret': context['oic_idcs_app_client_secret'], 'scope': context['oic_scope']}
 
         except Exception as ex:
             logging.getLogger().error('initContext: Failed to get config or secrets')
@@ -61,9 +61,15 @@ def introspectToken(access_token, introspection_endpoint, client_id, client_secr
 def getBackEndAuthToken(token_endpoint, client_id, client_secret, scope):
     # This method gets the token from the back-end system (oic in this case)
     payload = {'grant_type': 'client_credentials', 'scope': scope}
-    headers = {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'}
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     
     try:
+
+        logging.getLogger().info('getBackEndAuthToken: oic token_endpoint: ' + token_endpoint)
+        logging.getLogger().info('getBackEndAuthToken: oic client_id: ' + client_id)
+        logging.getLogger().info('getBackEndAuthToken: oic client_secret: ' + client_secret)
+        logging.getLogger().info('getBackEndAuthToken: oic scope: ' + scope)
+
         backend_token = json.loads(requests.post(token_endpoint, 
                                                  data=payload, 
                                                  headers=headers, 
@@ -92,13 +98,7 @@ def getAuthContext(token, client_apps):
     if (token_info['active'] == True):
         auth_context['active'] = True
         # Retrieving the back-end Token
-        logging.getLogger().info('getAuthContext: oic token_endpoint: ' + client_apps['oic']['token_endpoint'])
-        logging.getLogger().info('getAuthContext: oic client_id: ' + client_apps['oic']['client_id'])
-        logging.getLogger().info('getAuthContext: oic client_secret: ' + client_apps['oic']['client_secret'])
-        logging.getLogger().info('getAuthContext: oic scope: ' + client_apps['oic']['scope'])
         backend_token = getBackEndAuthToken(client_apps['oic']['token_endpoint'], client_apps['oic']['client_id'], client_apps['oic']['client_secret'], client_apps['oic']['scope'])
-        
-        logging.getLogger().info('getAuthContext: backend_token is ' + str(backend_token))
 
         # The maximum TTL for this auth is the lesser of the API Client Auth (IDCS) and the Gateway Client Auth (oic)
         # if (datetime.datetime.fromtimestamp(token_info['exp']) < (datetime.datetime.utcnow() + timedelta(seconds=backend_token['expires_in']))):
@@ -108,8 +108,6 @@ def getAuthContext(token, client_apps):
 
         # Storing the back_end_token in the context of the auth decision so we can map it to Authorization header using the request/response transformation policy
         auth_context['context'] = {'back_end_token': ('Bearer ' + str(backend_token['access_token']))}
-
-        logging.getLogger().info('getAuthContext: Set the auth_context')
 
     else:
         # API Client token is not active, so we will go ahead and respond with the wwwAuthenticate header
