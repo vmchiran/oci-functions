@@ -101,6 +101,8 @@ def getAuthContext(token, client_apps):
         # Storing the back_end_token in the context of the auth decision so we can map it to Authorization header using the request/response transformation policy
         auth_context['context'] = {'back_end_token': ('Bearer ' + str(backend_token['access_token']))}
 
+        logging.getLogger().info('Set the auth_context')
+
     else:
         # API Client token is not active, so we will go ahead and respond with the wwwAuthenticate header
         auth_context['active'] = False
