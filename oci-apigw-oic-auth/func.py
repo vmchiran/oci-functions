@@ -62,14 +62,16 @@ def getBackEndAuthToken(token_endpoint, client_id, client_secret, scope):
     # This method gets the token from the back-end system (oic in this case)
     payload = {'grant_type': 'client_credentials', 'scope': scope}
     headers = {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'}
+    
     try:
         backend_token = json.loads(requests.post(token_endpoint, 
                                                  data=payload, 
                                                  headers=headers, 
                                                  auth=HTTPBasicAuth(client_id, client_secret)).text)
+        logging.getLogger().error("getBackEndAuthToken: Got the backend token")
 
     except Exception as ex:
-        logging.getLogger().error("getBackEndAuthToken: Failed to get oic token" + ex)
+        logging.getLogger().error("getBackEndAuthToken: Failed to get the backend token" + ex)
         raise
     
     return backend_token
@@ -90,10 +92,10 @@ def getAuthContext(token, client_apps):
     if (token_info['active'] == True):
         auth_context['active'] = True
         # Retrieving the back-end Token
-        logging.getLogger().info('oic token_endpoint: ' + client_apps['oic']['token_endpoint'])
-        logging.getLogger().info('oic client_id: ' + client_apps['oic']['client_id'])
-        logging.getLogger().info('oic client_secret: ' + client_apps['oic']['client_secret'])
-        logging.getLogger().info('oic scope: ' + client_apps['oic']['scope'])
+        logging.getLogger().info('getAuthContext: oic token_endpoint: ' + client_apps['oic']['token_endpoint'])
+        logging.getLogger().info('getAuthContext: oic client_id: ' + client_apps['oic']['client_id'])
+        logging.getLogger().info('getAuthContext: oic client_secret: ' + client_apps['oic']['client_secret'])
+        logging.getLogger().info('getAuthContext: oic scope: ' + client_apps['oic']['scope'])
         backend_token = getBackEndAuthToken(client_apps['oic']['token_endpoint'], client_apps['oic']['client_id'], client_apps['oic']['client_secret'], client_apps['oic']['scope'])
         
         # The maximum TTL for this auth is the lesser of the API Client Auth (IDCS) and the Gateway Client Auth (oic)
@@ -105,7 +107,7 @@ def getAuthContext(token, client_apps):
         # Storing the back_end_token in the context of the auth decision so we can map it to Authorization header using the request/response transformation policy
         auth_context['context'] = {'back_end_token': ('Bearer ' + str(backend_token['access_token']))}
 
-        logging.getLogger().info('Set the auth_context')
+        logging.getLogger().info('getAuthContext: Set the auth_context')
 
     else:
         # API Client token is not active, so we will go ahead and respond with the wwwAuthenticate header
