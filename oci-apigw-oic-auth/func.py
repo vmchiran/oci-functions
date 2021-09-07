@@ -38,7 +38,7 @@ def initContext(context):
             print("ERROR [initContext]: Failed to get the configs", ex, flush=True)
             raise
     else:
-        logging.getLogger().info('OAuth Apps already stored')
+        logging.getLogger().info('initContext: OAuth Apps already stored')
 
 def introspectToken(access_token, introspection_endpoint, client_id, client_secret):
     # This method handles the introspection of the received auth token to IDCS.  
@@ -76,8 +76,7 @@ def getBackEndAuthToken(token_endpoint, client_id, client_secret, scope):
                                     headers=headers,
                                     auth=HTTPBasicAuth(client_id, client_secret))
 
-        logging.getLogger().info("getBackEndAuthToken: Request text " + backend_token.text)
-        logging.getLogger().info("getBackEndAuthToken: Got the backend token " + str(backend_token))
+        logging.getLogger().info("getBackEndAuthToken: Got the backend token " + backend_token.text)
 
     except Exception as ex:
         logging.getLogger().error("getBackEndAuthToken: Failed to get the backend token" + ex)
