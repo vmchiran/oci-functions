@@ -18,16 +18,24 @@ def initContext(context):
         logging.getLogger().info('Retriving details about the API and backend OAuth Apps')
         try:
             logging.getLogger().info('initContext: Initializing context')
-
+            
+            # # Using ociVault
             # oauth_apps['apigw'] = {'introspection_endpoint': context['idcs_introspection_endpoint'], 
             #                       'client_id': context['apigw_idcs_app_client_id'], 
             #                       'client_secret': ociVault.getSecret(context['apigw_idcs_app_client_secret_ocid'])}
-            oauth_apps['apigw'] = {'introspection_endpoint': context['idcs_introspection_endpoint'], 
-                                  'client_id': context['apigw_idcs_app_client_id'], 
-                                  'client_secret': context['apigw_idcs_app_client_secret']}
             # oauth_apps['oic'] = {'token_endpoint': context['idcs_token_endpoint'], 
             #                       'client_id': context['oic_idcs_app_client_id'], 
             #                       'client_secret': ociVault.getSecret(context['oic_idcs_app_client_secret_ocid']), 'scope': context['oic_scope']}
+
+            vault_apigw_secret = ociVault.getSecret(context['apigw_idcs_app_client_secret_ocid'])
+            vault_oic_secret = ociVault.getSecret(context['oic_idcs_app_client_secret_ocid'])
+            logging.getLogger().info('initContext: vault_apigw_secret ' + vault_apigw_secret)
+            logging.getLogger().info('initContext: vault_oic_secret ' + vault_oic_secret)
+
+            # Using clear text secrets
+            oauth_apps['apigw'] = {'introspection_endpoint': context['idcs_introspection_endpoint'], 
+                                  'client_id': context['apigw_idcs_app_client_id'], 
+                                  'client_secret': context['apigw_idcs_app_client_secret']}
             oauth_apps['oic'] = {'token_endpoint': context['idcs_token_endpoint'],
                                   'client_id': context['oic_idcs_app_client_id'], 
                                   'client_secret': context['oic_idcs_app_client_secret'],
@@ -66,10 +74,10 @@ def getBackEndAuthToken(token_endpoint, client_id, client_secret, scope):
     
     try:
 
-        logging.getLogger().info('getBackEndAuthToken: oic token_endpoint: ' + token_endpoint)
-        logging.getLogger().info('getBackEndAuthToken: oic client_id: ' + client_id)
-        logging.getLogger().info('getBackEndAuthToken: oic client_secret: ' + client_secret)
-        logging.getLogger().info('getBackEndAuthToken: oic scope: ' + scope)
+        # logging.getLogger().info('getBackEndAuthToken: oic token_endpoint: ' + token_endpoint)
+        # logging.getLogger().info('getBackEndAuthToken: oic client_id: ' + client_id)
+        # logging.getLogger().info('getBackEndAuthToken: oic client_secret: ' + client_secret)
+        # logging.getLogger().info('getBackEndAuthToken: oic scope: ' + scope)
 
         backend_token = requests.post(token_endpoint,
                                     data=payload,
