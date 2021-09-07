@@ -19,27 +19,27 @@ def initContext(context):
         try:
             logging.getLogger().info('initContext: Initializing context')
             
-            # # Using ociVault
-            # oauth_apps['apigw'] = {'introspection_endpoint': context['idcs_introspection_endpoint'], 
-            #                       'client_id': context['apigw_idcs_app_client_id'], 
-            #                       'client_secret': ociVault.getSecret(context['apigw_idcs_app_client_secret_ocid'])}
-            # oauth_apps['oic'] = {'token_endpoint': context['idcs_token_endpoint'], 
-            #                       'client_id': context['oic_idcs_app_client_id'], 
-            #                       'client_secret': ociVault.getSecret(context['oic_idcs_app_client_secret_ocid']), 'scope': context['oic_scope']}
-
-            vault_apigw_secret = ociVault.getSecret(context['apigw_idcs_app_client_secret_ocid'])
-            vault_oic_secret = ociVault.getSecret(context['oic_idcs_app_client_secret_ocid'])
-            logging.getLogger().info('initContext: vault_apigw_secret ' + vault_apigw_secret)
-            logging.getLogger().info('initContext: vault_oic_secret ' + vault_oic_secret)
-
-            # Using clear text secrets
+            # Using ociVault
             oauth_apps['apigw'] = {'introspection_endpoint': context['idcs_introspection_endpoint'], 
                                   'client_id': context['apigw_idcs_app_client_id'], 
-                                  'client_secret': context['apigw_idcs_app_client_secret']}
-            oauth_apps['oic'] = {'token_endpoint': context['idcs_token_endpoint'],
+                                  'client_secret': ociVault.getSecret(context['apigw_idcs_app_client_secret_ocid'])}
+            oauth_apps['oic'] = {'token_endpoint': context['idcs_token_endpoint'], 
                                   'client_id': context['oic_idcs_app_client_id'], 
-                                  'client_secret': context['oic_idcs_app_client_secret'],
-                                  'scope': context['oic_scope']}
+                                  'client_secret': ociVault.getSecret(context['oic_idcs_app_client_secret_ocid']), 'scope': context['oic_scope']}
+
+            # vault_apigw_secret = ociVault.getSecret(context['apigw_idcs_app_client_secret_ocid'])
+            # vault_oic_secret = ociVault.getSecret(context['oic_idcs_app_client_secret_ocid'])
+            # logging.getLogger().info('initContext: vault_apigw_secret ' + vault_apigw_secret)
+            # logging.getLogger().info('initContext: vault_oic_secret ' + vault_oic_secret)
+
+            # # Using clear text secrets
+            # oauth_apps['apigw'] = {'introspection_endpoint': context['idcs_introspection_endpoint'], 
+            #                       'client_id': context['apigw_idcs_app_client_id'], 
+            #                       'client_secret': context['apigw_idcs_app_client_secret']}
+            # oauth_apps['oic'] = {'token_endpoint': context['idcs_token_endpoint'],
+            #                       'client_id': context['oic_idcs_app_client_id'], 
+            #                       'client_secret': context['oic_idcs_app_client_secret'],
+            #                       'scope': context['oic_scope']}
 
         except Exception as ex:
             logging.getLogger().error('initContext: Failed to get config or secrets')
