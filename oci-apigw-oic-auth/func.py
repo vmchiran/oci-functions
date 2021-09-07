@@ -19,18 +19,18 @@ def initContext(context):
         try:
             logging.getLogger().info('initContext: Initializing context')
 
-            # oauth_apps['apigw'] = {'introspection_endpoint': context['idcs_introspection_endpoint'], 
-            #                       'client_id': context['apigw_idcs_app_client_id'], 
-            #                       'client_secret': ociVault.getSecret(context['apigw_idcs_app_client_secret_ocid'])}
             oauth_apps['apigw'] = {'introspection_endpoint': context['idcs_introspection_endpoint'], 
                                   'client_id': context['apigw_idcs_app_client_id'], 
-                                  'client_secret': context['apigw_idcs_app_client_secret']}
-            # oauth_apps['oic'] = {'token_endpoint': context['idcs_token_endpoint'], 
-            #                       'client_id': context['oic_idcs_app_client_id'], 
-            #                       'client_secret': ociVault.getSecret(context['oic_idcs_app_client_secret_ocid']), 'scope': context['oic_scope']}
+                                  'client_secret': ociVault.getSecret(context['apigw_idcs_app_client_secret_ocid'])}
+            # oauth_apps['apigw'] = {'introspection_endpoint': context['idcs_introspection_endpoint'], 
+            #                       'client_id': context['apigw_idcs_app_client_id'], 
+            #                       'client_secret': context['apigw_idcs_app_client_secret']}
             oauth_apps['oic'] = {'token_endpoint': context['idcs_token_endpoint'], 
                                   'client_id': context['oic_idcs_app_client_id'], 
-                                  'client_secret': context['oic_idcs_app_client_secret'], 'scope': context['oic_scope']}
+                                  'client_secret': ociVault.getSecret(context['oic_idcs_app_client_secret_ocid']), 'scope': context['oic_scope']}
+            # oauth_apps['oic'] = {'token_endpoint': context['idcs_token_endpoint'], 
+            #                       'client_id': context['oic_idcs_app_client_id'], 
+            #                       'client_secret': context['oic_idcs_app_client_secret'], 'scope': context['oic_scope']}
 
         except Exception as ex:
             logging.getLogger().error('initContext: Failed to get config or secrets')
@@ -49,8 +49,7 @@ def introspectToken(access_token, introspection_endpoint, client_id, client_secr
         token = requests.post(introspection_endpoint, 
                               data=payload, 
                               headers=headers, 
-                              auth=HTTPBasicAuth(client_id, 
-                              client_secret))
+                              auth=HTTPBasicAuth(client_id, client_secret))
 
     except Exception as ex:
         logging.getLogger().error("introspectToken: Failed to introspect token" + ex)
@@ -61,7 +60,8 @@ def introspectToken(access_token, introspection_endpoint, client_id, client_secr
 def getBackEndAuthToken(token_endpoint, client_id, client_secret, scope):
     # This method gets the token from the back-end system (oic in this case)
     payload = {'grant_type': 'client_credentials', 'scope': scope}
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    headers = {'Content-Type' : 'application/x-www-form-urlencoded;charset=UTF-8', 
+               'Accept': 'application/json'}
     
     try:
 
@@ -70,17 +70,18 @@ def getBackEndAuthToken(token_endpoint, client_id, client_secret, scope):
         logging.getLogger().info('getBackEndAuthToken: oic client_secret: ' + client_secret)
         logging.getLogger().info('getBackEndAuthToken: oic scope: ' + scope)
 
-        backend_token = json.loads(requests.post(token_endpoint, 
-                                                 data=payload, 
-                                                 headers=headers, 
-                                                 auth=HTTPBasicAuth(client_id, client_secret)).text)
+        backend_token = requests.post(token_endpoint,
+                                    data=payload,
+                                    headers=headers,
+                                    auth=HTTPBasicAuth(client_id, client_secret))
+
         logging.getLogger().info("getBackEndAuthToken: Got the backend token " + str(backend_token))
 
     except Exception as ex:
         logging.getLogger().error("getBackEndAuthToken: Failed to get the backend token" + ex)
         raise
     
-    return backend_token
+    return backend_token.json()
 
 def getAuthContext(token, client_apps):
     # This method populates the Auth Context that will be returned to the gateway.
