@@ -27,20 +27,6 @@ def initContext(context):
                                   'client_id': context['oic_idcs_app_client_id'], 
                                   'client_secret': ociVault.getSecret(context['oic_idcs_app_client_secret_ocid']), 'scope': context['oic_scope']}
 
-            # vault_apigw_secret = ociVault.getSecret(context['apigw_idcs_app_client_secret_ocid'])
-            # vault_oic_secret = ociVault.getSecret(context['oic_idcs_app_client_secret_ocid'])
-            # logging.getLogger().info('initContext: vault_apigw_secret ' + vault_apigw_secret)
-            # logging.getLogger().info('initContext: vault_oic_secret ' + vault_oic_secret)
-
-            # # Using clear text secrets
-            # oauth_apps['apigw'] = {'introspection_endpoint': context['idcs_introspection_endpoint'], 
-            #                       'client_id': context['apigw_idcs_app_client_id'], 
-            #                       'client_secret': context['apigw_idcs_app_client_secret']}
-            # oauth_apps['oic'] = {'token_endpoint': context['idcs_token_endpoint'],
-            #                       'client_id': context['oic_idcs_app_client_id'], 
-            #                       'client_secret': context['oic_idcs_app_client_secret'],
-            #                       'scope': context['oic_scope']}
-
         except Exception as ex:
             logging.getLogger().error('initContext: Failed to get config or secrets')
             print("ERROR [initContext]: Failed to get the configs", ex, flush=True)
@@ -73,12 +59,6 @@ def getBackEndAuthToken(token_endpoint, client_id, client_secret, scope):
                'Accept': 'application/json'}
     
     try:
-
-        # logging.getLogger().info('getBackEndAuthToken: oic token_endpoint: ' + token_endpoint)
-        # logging.getLogger().info('getBackEndAuthToken: oic client_id: ' + client_id)
-        # logging.getLogger().info('getBackEndAuthToken: oic client_secret: ' + client_secret)
-        # logging.getLogger().info('getBackEndAuthToken: oic scope: ' + scope)
-
         backend_token = requests.post(token_endpoint,
                                     data=payload,
                                     headers=headers,
@@ -107,7 +87,7 @@ def getAuthContext(token, client_apps):
     # If IDCS confirmed the token is valid and active, we can proceed to populate the auth context
     if (token_info['active'] == True):
         auth_context['active'] = True
-        auth_context['principal'] = token_info['sub']
+        # auth_context['principal'] = token_info['sub']
         auth_context['scope'] = token_info['scope']
         
         # Retrieving the back-end Token
