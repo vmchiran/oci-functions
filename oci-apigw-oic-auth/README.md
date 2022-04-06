@@ -10,9 +10,9 @@
 # Deploy and invoke the function
 
     cd oci-apigw-oic-auth
-    fn -v deploy --app my-fn-app
+    fn -v deploy --app <my-fn-app>
 
-    echo -n '{"token":"Bearer <token-value>"}' | fn invoke my-fn-app oci-apigw-oic-auth
+    echo -n '{"token":"Bearer <token-value>"}' | fn invoke <my-fn-app> oci-apigw-oic-auth
 
 # Documentation
 * [Protect OIC REST APIs with OCI API Gateway and OAuth2 – 2/2](https://mytechretreat.com/protect-oic-rest-apis-with-oci-api-gateway-and-oauth2-2-2/)
