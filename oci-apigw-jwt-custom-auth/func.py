@@ -65,7 +65,10 @@ def getAuthContext(token, client_apps):
     if (token_info['active'] == True):
         auth_context['active'] = True
         # auth_context['principal'] = token_info['sub']
+        auth_context['expiresAt'] = (datetime.datetime.fromtimestamp(token_info['exp'])).replace(tzinfo=datetime.timezone.utc).astimezone().replace(microsecond=0).isoformat()
+        # scope can be re-calculated, for use on the route Authorization policy
         auth_context['scope'] = token_info['scope']
+        # context is an optional comma-delimited list of key-value pairs in JSON format to return to API Gateway, for use on the route policies
         auth_context['context'] = {'key1':'value1','key2':'value2'}
 
     else:
