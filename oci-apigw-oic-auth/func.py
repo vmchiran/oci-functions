@@ -88,6 +88,7 @@ def getAuthContext(token, client_apps):
     if (token_info['active'] == True):
         auth_context['active'] = True
         # auth_context['principal'] = token_info['sub']
+        auth_context['client_id'] = token_info['client_id']
         auth_context['scope'] = token_info['scope']
         
         # Retrieving the back-end Token
