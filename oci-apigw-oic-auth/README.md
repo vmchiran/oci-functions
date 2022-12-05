@@ -1,6 +1,6 @@
 # FN App Configuration
-* idcs_introspection_endpoint	https://<idcs_host>.identity.oraclecloud.com/oauth2/v1/introspect
-* idcs_token_endpoint			https://<idcs_host>.identity.oraclecloud.com/oauth2/v1/token
+* idcs_introspection_endpoint https://<idcs_host>.identity.oraclecloud.com/oauth2/v1/introspect
+* idcs_token_endpoint         https://<idcs_host>.identity.oraclecloud.com/oauth2/v1/token
 * apigw_idcs_app_client_id
 * apigw_idcs_app_client_secret_ocid
 * oic_idcs_app_client_id
