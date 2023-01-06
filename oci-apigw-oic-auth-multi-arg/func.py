@@ -118,9 +118,7 @@ def handler(ctx, data: io.BytesIO=None):
     try:
         gateway_auth = json.loads(data.getvalue())
 
-        params = json.loads(gateway_auth['data'].getvalue())
-
-        auth_context = getAuthContext(params['token'], oauth_apps)
+        auth_context = getAuthContext(gateway_auth['data']['token'], oauth_apps)
 
         if (auth_context['active']):
             logging.getLogger().info('Authorizer returning 200...')
