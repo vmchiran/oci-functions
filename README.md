@@ -1,2 +1,4 @@
 # oci-functions
-Ref. https://github.com/oracle/oracle-functions-samples
+
+References and Inspiration
+* https://github.com/oracle-samples/oracle-functions-samples
