@@ -21,8 +21,8 @@ def initContext(context):
             
             # Using ociVault
             oauth_apps['apigw'] = {'introspection_endpoint': context['idcs_introspection_endpoint'], 
-                                  'client_id': context['apigw_idcs_app_client_id'], 
-                                  'client_secret': ociVault.getSecret(context['apigw_idcs_app_client_secret_ocid'])}
+                                  'client_id': context['introspection_idcs_app_client_id'], 
+                                  'client_secret': ociVault.getSecret(context['introspection_idcs_app_client_secret_ocid'])}
             oauth_apps['oic'] = {'token_endpoint': context['idcs_token_endpoint'], 
                                   'client_id': context['oic_idcs_app_client_id'], 
                                   'client_secret': ociVault.getSecret(context['oic_idcs_app_client_secret_ocid']), 'scope': context['oic_scope']}
